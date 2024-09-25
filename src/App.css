@@ -1,0 +1,54 @@
+/* Navbar.css */
+
+/* General layout for the navbar */
+.navbar {
+  width: 250px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  background-color: #E6E6E6 !important;  /* Updated to dark purple */
+  ; /* Light gray background */
+  z-index: 1030; /* Ensure it's above the content */
+}
+
+/* Adjust the layout of the page */
+.content-container {
+  margin-left: 250px; /* Match the navbar width */
+  padding: 20px; /* Add some padding */
+}
+
+/* Navbar brand styling */
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Navbar links styling */
+.nav-link {
+  color: #000; /* Black text color for links */
+  text-decoration: none; /* Remove underline from links */
+}
+
+/* User icon styling */
+.user-icon {
+  background-color: #e0e0e0; /* Light gray background for user icon */
+  border-radius: 50%; /* Make it circular */
+  width: 40px; /* Adjust size as needed */
+  height: 40px; /* Adjust size as needed */
+  font-weight: bold; /* Make initials stand out */
+  text-align: center; /* Center text horizontally */
+  line-height: 40px; /* Center text vertically */
+  display: inline-block; /* Ensure proper alignment */
+}
+
+/* User name styling */
+.user-name {
+  font-weight: bold; /* Make user name stand out */
+  margin-left: 10px; /* Space between user icon and name */
+}
+
+/* Optional: Add styles for active nav link (if needed) */
+.nav-link.active {
+  font-weight: bold; /* Make active link stand out */
+}
