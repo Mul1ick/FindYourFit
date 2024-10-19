@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import TinderCard from 'react-tinder-card';
 import '../Swipe.css';
-import { collection, onSnapshot } from 'firebase/firestore';  // Import Firestore functions
-import database from '../firebase';  // Import the Firestore instance
-import axios from 'axios';  // Import axios for API requests
+import axios from 'axios';  // For backend communication
 
 const Swipe = () => {
-    const [clothes, setClothes] = useState([]);  // Store clothes items from Firestore
+    const [clothes, setClothes] = useState([]);  // Store clothes items from JSON
     const [currentIndex, setCurrentIndex] = useState(0);  // Track the current index
     const [prediction, setPrediction] = useState(null);  // Store the prediction from Flask
 
@@ -21,6 +19,7 @@ const Swipe = () => {
                 direction: direction // Send swipe direction
             });
             console.log('Prediction from backend:', response.data);
+            setPrediction(response.data); // Set the prediction
         } catch (error) {
             console.error('Error sending swipe data:', error);
         }
@@ -32,19 +31,21 @@ const Swipe = () => {
             console.log('No more items to display');
         }
     };
+
     useEffect(() => {
-        // Reference to the 'clothes' collection in Firestore
-        const clothesCollectionRef = collection(database, 'clothes');
+        // Fetch data from the local JSON file
+        const fetchData = async () => {
+            try {
+                const response = await fetch('/clothes.json'); // Fetch from the public folder
+                const data = await response.json();
+                setClothes(data);  // Set clothes list from JSON
+                setCurrentIndex(0);  // Reset to the first item
+            } catch (error) {
+                console.error('Error fetching clothes data:', error);
+            }
+        };
 
-        // Setup a real-time listener to Firestore
-        const unsubscribe = onSnapshot(clothesCollectionRef, (snapshot) => {
-            const clothesList = snapshot.docs.map((doc) => doc.data());
-            setClothes(clothesList);  // Set clothes list from Firestore
-            setCurrentIndex(0);  // Reset to the first item
-        });
-
-        // Cleanup listener when component unmounts
-        return () => unsubscribe();
+        fetchData();
     }, []);
 
     return (
@@ -53,15 +54,15 @@ const Swipe = () => {
                 {clothes.length > 0 && currentIndex < clothes.length && (
                     <TinderCard
                         className="swipe"
-                        key={clothes[currentIndex].Title}
+                        key={clothes[currentIndex].productDisplayName}
                         preventSwipe={["down"]}
-                        onSwipe={(dir) => handleSwipe(dir, clothes[currentIndex].Title)}
+                        onSwipe={(dir) => handleSwipe(dir, clothes[currentIndex].productDisplayName)}
                     >
                         <div
-                            style={{ backgroundImage: `url(${clothes[currentIndex].pic})` }}
+                            style={{ backgroundImage: `url(${clothes[currentIndex].link})` }}
                             className="card"
                         >
-                            <h3>{clothes[currentIndex].Title}</h3>
+                            <h3>{clothes[currentIndex].productDisplayName}</h3>
                         </div>
                     </TinderCard>
                 )}
