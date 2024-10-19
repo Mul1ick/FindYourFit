@@ -9,22 +9,33 @@ const Swipe = () => {
     const [prediction, setPrediction] = useState(null);  // Store the prediction from Flask
 
     // Handle the swipe event
-    const handleSwipe = async (direction, Title) => {
-        console.log(`Swiped ${direction} on ${Title}`);
+    const handleSwipe = async (direction, item) => {
+        console.log(`Swiped ${direction} on ${item.productDisplayName} with id ${item.id}`);
         
-        // Send the swipe data to the backend
+        // Log the payload to confirm it is correct
+        console.log({
+            id: item.id,
+            title: item.productDisplayName,
+            direction: direction
+        });
+    
+        // Send the swipe data to the backend including id
         try {
             const response = await axios.post('http://127.0.0.1:5000/predict', {
-                title: Title,
-                direction: direction // Send swipe direction
+                id: item.id,
+                title: item.productDisplayName,
+                direction: direction
+            }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             });
             console.log('Prediction from backend:', response.data);
-            setPrediction(response.data); // Set the prediction
+            setPrediction(response.data);
         } catch (error) {
             console.error('Error sending swipe data:', error);
         }
-        
-        // After a swipe, move to the next item
+    
         if (currentIndex < clothes.length - 1) {
             setCurrentIndex(currentIndex + 1);
         } else {
@@ -36,7 +47,7 @@ const Swipe = () => {
         // Fetch data from the local JSON file
         const fetchData = async () => {
             try {
-                const response = await fetch('/clothes.json'); // Fetch from the public folder
+                const response = await fetch('/clothes_2.json'); // Fetch from the public folder
                 const data = await response.json();
                 setClothes(data);  // Set clothes list from JSON
                 setCurrentIndex(0);  // Reset to the first item
@@ -54,15 +65,15 @@ const Swipe = () => {
                 {clothes.length > 0 && currentIndex < clothes.length && (
                     <TinderCard
                         className="swipe"
-                        key={clothes[currentIndex].productDisplayName}
+                        key={clothes[currentIndex].id}  // Use id as key
                         preventSwipe={["down"]}
-                        onSwipe={(dir) => handleSwipe(dir, clothes[currentIndex].productDisplayName)}
+                        onSwipe={(dir) => handleSwipe(dir, clothes[currentIndex])}  // Pass the entire item to handleSwipe
                     >
                         <div
                             style={{ backgroundImage: `url(${clothes[currentIndex].link})` }}
                             className="card"
                         >
-                            <h3>{clothes[currentIndex].productDisplayName}</h3>
+                            <h3>{clothes[currentIndex].productDisplayName}</h3>  {/* Display title */}
                         </div>
                     </TinderCard>
                 )}
